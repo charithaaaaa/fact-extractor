@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
+
 import os
 if __name__ == '__main__' and __package__ is None:
     os.sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -18,10 +19,11 @@ from lib.scoring import compute_score, AVAILABLE_SCORES
 import click
 
 
+
 NORMALIZER = DateNormalizer()
 
 
-def label_sentence(entity_linking_results, debug, numerical):
+def label_sentence(entity_linking_results, debug, numerical,language):
     """Produce a labeled sentence by comparing the linked entities to the frame definition
 
     :param str entity_linking_results: path to JSON file containing the results of the
@@ -65,7 +67,7 @@ def label_sentence(entity_linking_results, debug, numerical):
                     assigned_fes = []
                     for diz in val:
                         # Filter out linked stopwords
-                        if diz['chunk'].lower() in stopwords.StopWords.words('italian'):
+                        if diz['chunk'].lower() in stopwords.StopWords.words(language):
                             continue
 
                         chunk = {
@@ -172,7 +174,7 @@ def label_sentence(entity_linking_results, debug, numerical):
     return labeled
 
 
-def process_dir(indir, debug, numerical):
+def process_dir(indir, debug, numerical,language):
     """Walk into the input directory and process all the entity linking results,
     creating the labeled data
 
@@ -186,7 +188,7 @@ def process_dir(indir, debug, numerical):
     for path, subdirs, files in os.walk(indir):
         for name in files:
             f = os.path.join(path, name)
-            labeled = label_sentence(f, debug, numerical)
+            labeled = label_sentence(f, debug, numerical,language)
             # Filename is {WIKI_ID}.{SENTENCE_ID}(.{extension})?
             labeled['id'] = '.'.join(name.split('.')[:2])
 
@@ -205,12 +207,14 @@ def process_dir(indir, debug, numerical):
 @click.option('--score-fes/--no-score-fes', help='Score individual FEs')
 @click.option('--debug/--no-debug', default=False)
 @click.option('--numerical/--no-numerical', default=True)
+@click.option('--language', default='italian', help='Language for stopwords')
 def main(linked_dir, labeled_out, score, core_weight, score_fes, debug, numerical):
     """
     this script is the actual unsupervised approach which produces labeled data
     out of entity linked sentences
     """
-    labeled = process_dir(linked_dir, score_fes, debug, numerical)
+    labeled = process_dir(linked_dir, score_fes, debug, numerical, language)
+
 
     if score:
         for sentence in labeled:
