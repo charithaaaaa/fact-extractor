@@ -208,7 +208,7 @@ def process_dir(indir, debug, numerical,language):
 @click.option('--debug/--no-debug', default=False)
 @click.option('--numerical/--no-numerical', default=True)
 @click.option('--language', default='italian', help='Language for stopwords')
-def main(linked_dir, labeled_out, score, core_weight, score_fes, debug, numerical):
+def main(linked_dir, labeled_out, score, core_weight, score_fes, debug, numerical,language):
     """
     this script is the actual unsupervised approach which produces labeled data
     out of entity linked sentences
