@@ -14,7 +14,7 @@ from lib.stopwords import StopWords
 
 
 
-def compute_tfidf_matrix(corpus_dir,language):
+def compute_tfidf_matrix(corpus_dir, language):
     sw = set(StopWords.words(language))
 
 
